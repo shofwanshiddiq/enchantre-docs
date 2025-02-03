@@ -38,19 +38,82 @@ Database setup for table and data samples.
 
 Utilize PHP in client's side to handle data request to cPanel API
 
-* Initialize server connection   <a href="myconnAll.php" target="_blank">myconnAll.php</a>
+* Initialize server connection
+```php
+<?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$servername = "localhost";
+$database = "database";
+$username = "usernamee";
+$password = "password";
+$conn = mysqli_connect($servername, $username, $password, $database);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+  }
+?>
+```
 
 
-Consume from database
+* Consume from database
 ```php
 include "myconnAll.php";
 $sql = "SELECT 00_ID FROM WD01 WHERE 00_ID = '$id' AND 01_Active = '1'";
 $hasil = mysqli_query($conn, $sql);
 ```
 
-* Posting to server-side <a href="SubmitRSVP.php" target="_blank">SubmitRSVP.php</a>
+* Posting to server-side 
+```php
+<?php
+session_start();
+include('myconnAll.php'); // Ensure this includes your DB connection details
 
-Initialize POST from page
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve form data and session variables
+    $id = isset($_SESSION['id']) ? $_SESSION['id'] : ''; // to 00_ID and 03_CreateBy
+    // Other data from form  
+
+    // Establish database connection
+    $conn = new mysqli($servername, $username, $password, $database);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Prepare SQL query to get the next sequence number
+    $sql = "QUERY FOR GET MAX SEQ";
+    $result = $conn->query($sql);
+
+    // Check if query was successful
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $nextSeq = $row['next_seq'];
+
+        // Prepare SQL query to insert data into WD04
+        $insertSql = "INSERT INTO MYSQL TABLE";
+
+        // Execute insert query
+        if ($conn->query($insertSql) === TRUE) {
+            echo "Reservation Submitted Sucess";
+        } else {
+            echo "Failed to Submit on Insert PHP";
+        }
+    } else {
+        echo "Failed to Submit on Submit";
+    }
+
+    // Close connection
+    $conn->close();
+} else {
+    echo "Invalid request method";
+}
+?>
+```
+
+* Initialize POST from page
 ```php
 var formData = new FormData(this);
 var xhr = new XMLHttpRequest();
@@ -65,9 +128,21 @@ xhr.onload = function () {
 xhr.send(formData);
 ```
 
+# Galleries
+Enchantre digital invitation support both mobile, desktop and other screen resolution with responsive view
+### Mobile View
+<img src="https://github.com/user-attachments/assets/d3dd84b6-7ee3-483e-b27b-3e3e33f12a06" alt="Capture9" width="250" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/3ba11aad-6b1a-4089-853d-95854c8939fa" alt="Capture9" width="250" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/f7ba4e9c-39e8-450a-820a-148194b1097d" alt="Capture9" width="250" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/c1455eda-5e94-4f71-8240-ee6fd30b9362" alt="Capture9" width="250" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/b6f18a54-a1b9-4966-985a-777d31c22ddf" alt="Capture9" width="250" style="border-radius: 20px;">
 
-
-
+### Desktop View
+<img src="https://github.com/user-attachments/assets/b5f72de1-c575-4ca1-b702-18f9f32a9d20" alt="Capture9" width="500" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/6a6a76e5-8a5c-44ba-abd6-0650d8d40a3e" alt="Capture9" width="500" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/060ec658-e366-434c-9e09-4248d44c5f4a" alt="Capture9" width="500" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/cfec69a3-18cf-4cb0-82e6-001b4228159f" alt="Capture9" width="500" style="border-radius: 20px;">
+<img src="https://github.com/user-attachments/assets/cfce44c9-9616-4119-b455-f3e043a822f4" alt="Capture9" width="500" style="border-radius: 20px;">
 
 
 
